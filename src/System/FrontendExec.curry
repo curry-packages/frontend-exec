@@ -260,6 +260,9 @@ callFrontendWithParams target params modpath = do
     , if overlapWarn params then ""           else "--no-overlap-warn"
     , maybe "" ("--htmldir="++) (htmldir params)
     , specials params
+    , if target `elem` [FCY,TFCY,TAFCY,FINT]
+        then "-Odesugar-newtypes" -- remove when newtypes added to FlatCurry
+        else ""
     ]
 
    runQuiet = "--no-verb --no-warn --no-overlap-warn"
