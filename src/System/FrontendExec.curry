@@ -11,8 +11,7 @@ module System.FrontendExec
   (FrontendTarget(..)
 
   , FrontendParams, defaultParams, rcParams
-  , quiet, extended, cpp, definitions, overlapWarn, fullPath, htmldir, logfile
-  , specials, setQuiet, setExtended, setCpp, addDefinition, setDefinitions
+  , setQuiet, setExtended, setCpp, addDefinition, setDefinitions
   , setOverlapWarn, setFullPath, setHtmlDir, setLogfile, addTarget, setSpecials
 
   , callFrontend, callFrontendWithParams
@@ -54,28 +53,19 @@ data FrontendTarget = FCY | TFCY | FINT | ACY | UACY | HTML | CY | TOKS | TAFCY
 --- of the Curry compiler.
 -- The parameters are of the form
 -- FrontendParams Quiet Extended Cpp NoOverlapWarn FullPath HtmlDir LogFile Specials
--- where
---   Quiet         - work silently
---   Extended      - support extended Curry syntax
---   Cpp           - enable conditional compiling
---   Definitions   - definitions for conditional compiling
---   OverlapWarn   - warn for overlapping rules
---   FullPath dirs - the complete list of directory names for loading modules
---   HtmlDir file  - output directory (only relevant for HTML target)
---   LogFile file  - store all output (including errors) of the front end in file
---   Targets       - additional targets for the front end
---   Specials      - additional special parameters (use with care!)
 data FrontendParams =
-  FrontendParams Bool
-                 Bool
-                 Bool
-                 [(String, Int)]
-                 Bool
-                 (Maybe [String])
-                 (Maybe String)
-                 (Maybe String)
-                 [FrontendTarget]
-                 String
+  FrontendParams
+    { quiet           :: Bool              -- work silently
+    , extended        :: Bool              -- support extended Curry syntax
+    , cpp             :: Bool              -- enable conditional compiling
+    , definitions     :: [(String, Int)]   -- definitions for conditional compiling
+    , overlapWarn     :: Bool              -- warn for overlapping rules
+    , fullPath        :: Maybe [String]    -- the complete list of directory names for loading modules
+    , htmldir         :: Maybe String      -- output directory (only relevant for HTML target)
+    , logfile         :: Maybe String      -- store all output (including errors) of the front end in file
+    , targets         :: [FrontendTarget]  -- additional targets for the front end
+    , specials        :: String            -- additional special parameters (use with care!)
+    }
 
 --- The default parameters of the front end.
 defaultParams :: FrontendParams
@@ -157,46 +147,6 @@ setSpecials s (FrontendParams a b c d e f g h ts _) =
 addTarget :: FrontendTarget -> FrontendParams -> FrontendParams
 addTarget t (FrontendParams a b c d e f g h ts sp) =
   FrontendParams a b c d e f g h (t:ts) sp
-
---- Returns the value of the "quiet" parameter.
-quiet :: FrontendParams -> Bool
-quiet (FrontendParams x _ _ _ _ _ _ _ _ _) = x
-
---- Returns the value of the "extended" parameter.
-extended :: FrontendParams -> Bool
-extended (FrontendParams _ x _ _ _ _ _ _ _ _) = x
-
---- Returns the value of the "cpp" parameter.
-cpp :: FrontendParams -> Bool
-cpp (FrontendParams _ _ x _ _ _ _ _ _ _) = x
-
---- Returns the value of the "cpp" parameter.
-definitions :: FrontendParams -> [(String, Int)]
-definitions (FrontendParams _ _ _ x _ _ _ _ _ _) = x
-
---- Returns the value of the "overlapWarn" parameter.
-overlapWarn :: FrontendParams -> Bool
-overlapWarn (FrontendParams _ _ _ _ x _ _ _ _ _) = x
-
---- Returns the full path parameter of the front end.
-fullPath :: FrontendParams -> Maybe [String]
-fullPath (FrontendParams _ _ _ _ _ x _ _ _ _) = x
-
---- Returns the htmldir parameter of the front end.
-htmldir :: FrontendParams -> Maybe String
-htmldir  (FrontendParams _ _ _ _ _ _ x _ _ _) = x
-
---- Returns the logfile parameter of the front end.
-logfile :: FrontendParams -> Maybe String
-logfile  (FrontendParams _ _ _ _ _ _ _ x _ _) = x
-
---- Returns the special parameters of the front end.
-targets :: FrontendParams -> [FrontendTarget]
-targets (FrontendParams _ _ _ _ _ _ _ _ x _) = x
-
---- Returns the special parameters of the front end.
-specials :: FrontendParams -> String
-specials (FrontendParams _ _ _ _ _ _ _ _ _ x) = x
 
 --- In order to make sure that compiler generated files (like .fcy, .fint, .acy)
 --- are up to date, one can call the front end of the Curry compiler
