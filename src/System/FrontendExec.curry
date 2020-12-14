@@ -13,6 +13,7 @@ module System.FrontendExec
   , FrontendParams(..), defaultParams, rcParams
   , setQuiet, setExtended, setCpp, addDefinition, setDefinitions
   , setOverlapWarn, setFullPath, setHtmlDir, setLogfile, addTarget, setSpecials
+  , setFrontendPath
 
   , callFrontend, callFrontendWithParams
   ) where
@@ -52,7 +53,7 @@ data FrontendTarget = FCY | TFCY | FINT | ACY | UACY | HTML | CY | TOKS | TAFCY
 --- Abstract data type for representing parameters supported by the front end
 --- of the Curry compiler.
 -- The parameters are of the form
--- FrontendParams Quiet Extended Cpp NoOverlapWarn FullPath HtmlDir LogFile Specials
+-- FrontendParams Quiet Extended Cpp NoOverlapWarn FullPath HtmlDir LogFile Specials FrontendPath
 data FrontendParams =
   FrontendParams
     { quiet           :: Bool              -- work silently
@@ -65,22 +66,24 @@ data FrontendParams =
     , logfile         :: Maybe String      -- store all output (including errors) of the front end in file
     , targets         :: [FrontendTarget]  -- additional targets for the front end
     , specials        :: String            -- additional special parameters (use with care!)
+    , frontendPath    :: String            -- the path to the frontend executable
     }
 
 --- The default parameters of the front end.
 defaultParams :: FrontendParams
 defaultParams =
   FrontendParams
-    { quiet       = False
-    , extended    = True
-    , cpp         = False
-    , definitions = defaultDefs
-    , overlapWarn = True
-    , fullPath    = Nothing
-    , htmldir     = Nothing
-    , logfile     = Nothing
-    , targets     = []
-    , specials    = ""
+    { quiet        = False
+    , extended     = True
+    , cpp          = False
+    , definitions  = defaultDefs
+    , overlapWarn  = True
+    , fullPath     = Nothing
+    , htmldir      = Nothing
+    , logfile      = Nothing
+    , targets      = []
+    , specials     = ""
+    , frontendPath = installDir </> "bin" </> curryCompiler ++ "-frontend"
     }
  where
   defaultDefs = [("__" ++ map toUpper curryCompiler ++ "__",
@@ -148,6 +151,10 @@ setSpecials s ps = ps { specials = s }
 addTarget :: FrontendTarget -> FrontendParams -> FrontendParams
 addTarget t ps = ps { targets = t : targets ps }
 
+--- Sets the path to the frontend executable.
+setFrontendPath :: String -> FrontendParams -> FrontendParams
+setFrontendPath s ps = ps { frontendPath = s }
+
 --- In order to make sure that compiler generated files (like .fcy, .fint, .acy)
 --- are up to date, one can call the front end of the Curry compiler
 --- with this action.
@@ -185,7 +192,7 @@ callFrontendWithParams target params modpath = do
      path <- maybe (getLoadPathForModule modpath)
                    (\p -> return (nub (takeDirectory modpath : p)))
                    (fullPath params)
-     return (quote (installDir </> "bin" </> curryCompiler ++ "-frontend")
+     return (quote (frontendPath params)
              ++ concatMap ((" -i" ++) . quote) path)
 
    quote s = '"' : s ++ "\""
