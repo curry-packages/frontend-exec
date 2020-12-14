@@ -70,7 +70,18 @@ data FrontendParams =
 --- The default parameters of the front end.
 defaultParams :: FrontendParams
 defaultParams =
-  FrontendParams False True False defaultDefs True Nothing Nothing Nothing [] ""
+  FrontendParams
+    { quiet       = False
+    , extended    = True
+    , cpp         = False
+    , definitions = defaultDefs
+    , overlapWarn = True
+    , fullPath    = Nothing
+    , htmldir     = Nothing
+    , logfile     = Nothing
+    , targets     = []
+    , specials    = ""
+    }
  where
   defaultDefs = [("__" ++ map toUpper curryCompiler ++ "__",
                   curryCompilerMajorVersion * 100 + curryCompilerMinorVersion)]
