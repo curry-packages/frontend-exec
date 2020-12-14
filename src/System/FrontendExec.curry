@@ -88,65 +88,54 @@ rcParams = do
 
 --- Set quiet mode of the front end.
 setQuiet :: Bool -> FrontendParams -> FrontendParams
-setQuiet s (FrontendParams _ t u v w x y z ts sp) =
-  FrontendParams s t u v w x y z ts sp
+setQuiet s ps = ps { quiet = s }
 
 --- Set extended mode of the front end.
 setExtended :: Bool -> FrontendParams -> FrontendParams
-setExtended s (FrontendParams a _ u v w x y z ts sp) =
-  FrontendParams a s u v w x y z ts sp
+setExtended s ps = ps { extended = s }
 
 --- Set cpp mode of the front end.
 setCpp :: Bool -> FrontendParams -> FrontendParams
-setCpp s (FrontendParams a b _ v w x y z ts sp) =
-  FrontendParams a b s v w x y z ts sp
+setCpp s ps = ps { cpp = s }
 
 --- Add cpp definition of the front end.
 addDefinition :: (String, Int) -> FrontendParams -> FrontendParams
-addDefinition d (FrontendParams a b c ds w x y z ts sp) =
-  FrontendParams a b c (ds ++ [d]) w x y z ts sp
+addDefinition d ps = ps { definitions = definitions ps ++ [d] }
 
 --- Set cpp definitions of the front end.
 setDefinitions :: [(String, Int)] -> FrontendParams -> FrontendParams
-setDefinitions s (FrontendParams a b c _ w x y z ts sp) =
-  FrontendParams a b c s w x y z ts sp
+setDefinitions s ps = ps { definitions = s }
 
 --- Set overlap warn mode of the front end.
 setOverlapWarn :: Bool -> FrontendParams -> FrontendParams
-setOverlapWarn s (FrontendParams a b c d _ x y z ts sp) =
-  FrontendParams a b c d s x y z ts sp
+setOverlapWarn s ps = ps { overlapWarn = s }
 
 --- Set the full path of the front end.
 --- If this parameter is set, the front end searches all modules
 --- in this path (instead of using the default path).
 setFullPath :: [String] -> FrontendParams -> FrontendParams
-setFullPath s (FrontendParams a b c d e _ y z ts sp) =
-  FrontendParams a b c d e (Just s) y z ts sp
+setFullPath s ps = ps { fullPath = Just s }
 
 --- Set the htmldir parameter of the front end.
 --- Relevant for HTML generation.
 setHtmlDir :: String -> FrontendParams -> FrontendParams
-setHtmlDir s (FrontendParams a b c d e f _ z ts sp) =
-  FrontendParams a b c d e f (Just s) z ts sp
+setHtmlDir s ps = ps { htmldir = Just s }
 
 --- Set the logfile parameter of the front end.
 --- If this parameter is set, all messages produced by the front end
 --- are stored in this file.
 setLogfile :: String -> FrontendParams -> FrontendParams
-setLogfile s (FrontendParams a b c d e f g _ ts sp) =
-  FrontendParams a b c d e f g (Just s) ts sp
+setLogfile s ps = ps { logfile = Just s }
 
 --- Set additional specials parameters of the front end.
 --- These parameters are specific for the current front end and
 --- should be used with care, since their form might change in the future.
 setSpecials :: String -> FrontendParams -> FrontendParams
-setSpecials s (FrontendParams a b c d e f g h ts _) =
-  FrontendParams a b c d e f g h ts s
+setSpecials s ps = ps { specials = s }
 
 --- Add an additional front end target.
 addTarget :: FrontendTarget -> FrontendParams -> FrontendParams
-addTarget t (FrontendParams a b c d e f g h ts sp) =
-  FrontendParams a b c d e f g h (t:ts) sp
+addTarget t ps = ps { targets = t : targets ps }
 
 --- In order to make sure that compiler generated files (like .fcy, .fint, .acy)
 --- are up to date, one can call the front end of the Curry compiler
