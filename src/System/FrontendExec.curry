@@ -10,7 +10,7 @@
 module System.FrontendExec
   (FrontendTarget(..)
 
-  , FrontendParams, defaultParams, rcParams
+  , FrontendParams(..), defaultParams, rcParams
   , setQuiet, setExtended, setCpp, addDefinition, setDefinitions
   , setOverlapWarn, setFullPath, setHtmlDir, setLogfile, addTarget, setSpecials
 
