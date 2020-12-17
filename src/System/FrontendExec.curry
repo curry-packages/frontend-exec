@@ -37,6 +37,7 @@ import Language.Curry.Distribution
 --- by the front end of the Curry compiler.
 --- @cons FCY   - FlatCurry file ending with .fcy
 --- @cons TFCY  - Typed FlatCurry file ending with .tfcy
+--- @cons TAFCY - Type Annotated FlatCurry file ending with .tafcy
 --- @cons FINT  - FlatCurry interface file ending with .fint
 --- @cons ACY   - AbstractCurry file ending with .acy
 --- @cons UACY  - Untyped (without type checking) AbstractCurry file ending with .uacy
@@ -199,7 +200,7 @@ callFrontendWithParams target params modpath = do
 
    showFrontendTarget FCY   = "--flat"
    showFrontendTarget TFCY  = "--typed-flat"
-   showFrontendTarget TAFCY = "--type-annotated-flat"
+   showFrontendTarget TAFCY = "--type-annotated-flat --flat" -- due to f.e.bug
    showFrontendTarget FINT  = "--flat"
    showFrontendTarget ACY   = "--acy"
    showFrontendTarget UACY  = "--uacy"
