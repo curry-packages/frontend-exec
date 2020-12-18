@@ -18,16 +18,16 @@ module System.FrontendExec
   , callFrontend, callFrontendWithParams
   ) where
 
+import Curry.Compiler.Distribution 
+                          ( curryCompiler, curryCompilerMajorVersion
+                          , curryCompilerMinorVersion, installDir
+                          )
 import Data.Char          ( toUpper )
 import Data.List          ( intercalate, nub )
 import Data.PropertyFile  ( getPropertiesFromFile )
 import System.FilePath    ( FilePath, (</>), takeDirectory, takeFileName )
 import System.Process     ( system )
 import System.CurryPath   ( curryrcFileName, currySubdir, getLoadPathForModule )
-import Language.Curry.Distribution 
-                          ( curryCompiler, curryCompilerMajorVersion
-                          , curryCompilerMinorVersion, installDir
-                          )
 
 -------------------------------------------------------------------
 -- calling the front end
