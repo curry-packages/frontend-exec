@@ -12,8 +12,8 @@ module System.FrontendExec
 
   , FrontendParams(..), defaultParams, rcParams
   , setQuiet, setExtended, setCpp, addDefinition, setDefinitions
-  , setOverlapWarn, setFullPath, setHtmlDir, setLogfile, addTarget, setSpecials
-  , setFrontendPath
+  , setOverlapWarn, setFullPath, setHtmlDir, setOutDir, setLogfile
+  , addTarget, setSpecials, setFrontendPath
 
   , callFrontend, callFrontendWithParams
   ) where
@@ -63,7 +63,8 @@ data FrontendParams =
     , definitions     :: [(String, Int)]   -- definitions for conditional compiling
     , overlapWarn     :: Bool              -- warn for overlapping rules
     , fullPath        :: Maybe [String]    -- the complete list of directory names for loading modules
-    , htmldir         :: Maybe String      -- output directory (only relevant for HTML target)
+    , htmldir         :: Maybe String      -- output directory for HTML target
+    , outdir          :: String            -- output directory for Curry artifacts
     , logfile         :: Maybe String      -- store all output (including errors) of the front end in file
     , targets         :: [FrontendTarget]  -- additional targets for the front end
     , specials        :: String            -- additional special parameters (use with care!)
@@ -81,6 +82,7 @@ defaultParams =
     , overlapWarn  = True
     , fullPath     = Nothing
     , htmldir      = Nothing
+    , outdir       = currySubdir
     , logfile      = Nothing
     , targets      = []
     , specials     = ""
@@ -135,6 +137,10 @@ setFullPath s ps = ps { fullPath = Just s }
 --- Relevant for HTML generation.
 setHtmlDir :: String -> FrontendParams -> FrontendParams
 setHtmlDir s ps = ps { htmldir = Just s }
+
+--- Sets the output directory of frontend artifacts ('currySubdir' by default)
+setOutDir :: String -> FrontendParams -> FrontendParams
+setOutDir s ps = ps { outdir = s }
 
 --- Set the logfile parameter of the front end.
 --- If this parameter is set, all messages produced by the front end
@@ -212,7 +218,7 @@ callFrontendWithParams target params modpath = do
    showFrontendTarget COMMS = "--comments"
 
    showFrontendParams = unwords
-    [ "-o ", currySubdir
+    [ "-o ", outdir params
     , if quiet       params then runQuiet     else ""
     , if extended    params then "--extended" else ""
     , if cpp         params then "--cpp"      else ""
